@@ -106,10 +106,9 @@ function addDays(date, days) {
     return d;
 }
 
-// Override some dates for holidays/off-days
 const overrides = {
-    food: ["2025-12-30"],     // Food waste Tue 30/12/25
-    recycling: ["2026-01-06"] // Recycling Tue 06/01/26
+    food: ["2025-12-30"],     
+    recycling: ["2026-01-06"] 
 };
 
 function nextCycle(start, cycleDays, today, type) {
@@ -132,10 +131,10 @@ const today = new Date();
 const tomorrow = addDays(today, 1);
 
 const cycles = {
-    food: { name: "Food Waste", start: new Date("2025-12-08"), cycle: 7, color:"green" },
-    garden: { name: "Garden Waste", start: new Date("2025-12-08"), cycle: 14, color:"green" },
-    recycling: { name: "Recycling", start: new Date("2025-12-08"), cycle: 14, color:"gray" },
-    refuse: { name: "Refuse", start: new Date("2025-12-22"), cycle: 21, color:"black" }
+    food: { name: "Food Waste", label: "Green Bin", start: new Date("2025-12-08"), cycle: 7, color:"green" },
+    garden: { name: "Garden Waste", label: "Green Bin", start: new Date("2025-12-08"), cycle: 14, color:"green" },
+    recycling: { name: "Recycling", label: "Gray Bin", start: new Date("2025-12-08"), cycle: 14, color:"gray" },
+    refuse: { name: "Refuse", label: "Black Bin", start: new Date("2025-12-22"), cycle: 21, color:"black" }
 };
 
 const output = document.getElementById("output");
@@ -145,10 +144,8 @@ let binsArray = Object.entries(cycles).map(([key, bin]) => {
     return bin;
 });
 
-// Sort by next collection date
 binsArray.sort((a, b) => a.nextDate - b.nextDate);
 
-// Render
 binsArray.forEach(bin => {
     let next = bin.nextDate;
     let labelHTML = "";
@@ -163,7 +160,7 @@ binsArray.forEach(bin => {
 
     output.innerHTML += `
         <div class="bin ${bin.color}" style="border:${borderStyle}">
-            <h2>${bin.name}</h2>
+            <h2>${bin.name} (<span style="color:${bin.color}; font-weight:700;">${bin.label}</span>)</h2>
             <p><strong>Next collection:</strong> ${formatDate(next)}${labelHTML}</p>
             <p><strong>Collection cycle:</strong> ${
                 bin.cycle === 7 ? "Every Monday" :
