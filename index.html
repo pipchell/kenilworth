@@ -160,7 +160,7 @@ binsArray.forEach(bin => {
 
     output.innerHTML += `
         <div class="bin ${bin.color}" style="border:${borderStyle}">
-            <h2>${bin.name} (<span style="color:${bin.color}; font-weight:700;">${bin.label}</span>)</h2>
+            <h2>${bin.name} (${bin.label})</h2>
             <p><strong>Next collection:</strong> ${formatDate(next)}${labelHTML}</p>
             <p><strong>Collection cycle:</strong> ${
                 bin.cycle === 7 ? "Every Monday" :
