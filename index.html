@@ -66,10 +66,10 @@ footer {
 
 @media screen and (max-width: 768px) {
     .wrapper { padding: 15px; }
-    h1 { font-size: 36px; }
-    .bin { padding: 28px; font-size: 18px; }
-    .today, .tomorrow { font-size: 20px; }
-    footer { font-size: 16px; }
+    h1 { font-size: 44px; }
+    .bin { padding: 36px; font-size: 20px; }
+    .today, .tomorrow { font-size: 22px; }
+    footer { font-size: 20px; }
 }
 </style>
 </head>
@@ -106,17 +106,16 @@ function addDays(date, days) {
     return d;
 }
 
-// Override some dates for holidays
+// Override some dates for holidays/off-days
 const overrides = {
-    food: ["2025-12-30"],  // Food waste on Tue 30/12/25 instead of Mon
-    recycling: ["2026-01-06"] // Recycling on Tue 06/01/26
+    food: ["2025-12-30"],     // Food waste Tue 30/12/25
+    recycling: ["2026-01-06"] // Recycling Tue 06/01/26
 };
 
 function nextCycle(start, cycleDays, today, type) {
     let d = new Date(start);
     while (d < today) d = addDays(d, cycleDays);
 
-    // Check for overrides
     if (overrides[type]) {
         for (let o of overrides[type]) {
             const overrideDate = new Date(o);
