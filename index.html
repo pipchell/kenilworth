@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bin Collections - Royston</title>
+<title>Bin Collections - Kenilworth</title>
 <link rel="icon" type="image/png" href="logo2.png">
 
 <style>
@@ -14,9 +14,7 @@
     font-weight: 700;
 }
 
-* {
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
@@ -52,16 +50,12 @@ h1 {
     text-align: center;
 }
 
-.purple { background:#2b004d; }
-.brown { background:#3b2400; }
+.green { background:#005f2f; }
+.gray { background:#555; }
 .black { background:#111; }
-.brown2 { background:#3b2400; }
-.blue { background:#003d7d; }
+.brown { background:#3b2400; }
 
-.today, .tomorrow {
-    color: #4db6ff;
-    font-weight:bold;
-}
+.today, .tomorrow { color: #4db6ff; font-weight:bold; }
 
 footer {
     text-align:center;
@@ -72,32 +66,27 @@ footer {
 
 @media screen and (max-width: 768px) {
     .wrapper { padding: 15px; }
-    h1 { font-size: 44px; }
-    .bin {
-        padding: 36px;
-        font-size: 20px;
-    }
-    .today, .tomorrow { font-size: 22px; }
-    footer { font-size: 20px; }
+    h1 { font-size: 36px; }
+    .bin { padding: 28px; font-size: 18px; }
+    .today, .tomorrow { font-size: 20px; }
+    footer { font-size: 16px; }
 }
 </style>
 </head>
 <body>
 
 <div class="wrapper">
-    <h1>Bin Collections - Royston</h1>
-
+    <h1>Bin Collections - Kenilworth</h1>
     <div id="output"></div>
 
     <footer>Pip Chell - V4.6</footer>
-
     <h6 style="
         text-align:center;
         font-family:'LeagueSpartan', sans-serif;
         font-weight:700;
         margin-top:20px;
     ">
-        Info Only Accurate For Royston, Hertfordshire. This Is Not An Official Service.
+        Info Only Accurate For Kenilworth, CV8. This Is Not An Official Service.
     </h6>
 </div>
 
@@ -117,9 +106,26 @@ function addDays(date, days) {
     return d;
 }
 
-function nextCycle(start, cycleDays, today) {
+// Override some dates for holidays
+const overrides = {
+    food: ["2025-12-30"],  // Food waste on Tue 30/12/25 instead of Mon
+    recycling: ["2026-01-06"] // Recycling on Tue 06/01/26
+};
+
+function nextCycle(start, cycleDays, today, type) {
     let d = new Date(start);
     while (d < today) d = addDays(d, cycleDays);
+
+    // Check for overrides
+    if (overrides[type]) {
+        for (let o of overrides[type]) {
+            const overrideDate = new Date(o);
+            if (overrideDate >= today && overrideDate < addDays(d, cycleDays)) {
+                d = overrideDate;
+                break;
+            }
+        }
+    }
     return d;
 }
 
@@ -127,53 +133,25 @@ const today = new Date();
 const tomorrow = addDays(today, 1);
 
 const cycles = {
-    nonRecyclable: {
-        name: "Non-Recyclable Waste (Purple Lid)",
-        start: new Date("2025-11-17"),
-        cycle: 21,
-        color:"purple"
-    },
-    food: {
-        name: "Food Waste (Brown Caddy)",
-        start: new Date("2025-11-17"),
-        cycle: 7,
-        color:"brown"
-    },
-    mixed: {
-        name: "Mixed Recycling (Black Lid)",
-        start: new Date("2025-11-24"),
-        cycle: 21,
-        color:"black"
-    },
-    garden: {
-        name: "Garden Waste (Brown Lid)",
-        start: new Date("2025-11-24"),
-        cycle: 14,
-        color:"brown2"
-    },
-    paper: {
-        name: "Cardboard & Paper (Blue Lid)",
-        start: new Date("2025-12-01"),
-        cycle: 21,
-        color:"blue"
-    }
+    food: { name: "Food Waste", start: new Date("2025-12-08"), cycle: 7, color:"green" },
+    garden: { name: "Garden Waste", start: new Date("2025-12-08"), cycle: 14, color:"green" },
+    recycling: { name: "Recycling", start: new Date("2025-12-08"), cycle: 14, color:"gray" },
+    refuse: { name: "Refuse", start: new Date("2025-12-22"), cycle: 21, color:"black" }
 };
 
 const output = document.getElementById("output");
 
-// Convert to array, calculate next date
-let binsArray = Object.values(cycles).map(bin => {
-    bin.nextDate = nextCycle(bin.start, bin.cycle, today);
+let binsArray = Object.entries(cycles).map(([key, bin]) => {
+    bin.nextDate = nextCycle(bin.start, bin.cycle, today, key);
     return bin;
 });
 
-// Sort by next collection
+// Sort by next collection date
 binsArray.sort((a, b) => a.nextDate - b.nextDate);
 
-// Render HTML
+// Render
 binsArray.forEach(bin => {
     let next = bin.nextDate;
-
     let labelHTML = "";
     let isToday = formatDate(next) === formatDate(today);
     let isTomorrow = formatDate(next) === formatDate(tomorrow);
@@ -182,16 +160,16 @@ binsArray.forEach(bin => {
     if (isTomorrow) labelHTML = " <span class='tomorrow'>(Tomorrow)</span>";
 
     let borderStyle = "6px solid #333";
-    if (isToday || isTomorrow) borderStyle = "6px solid white";
+    if (isToday || isTomorrow) borderStyle = '6px solid white';
 
     output.innerHTML += `
         <div class="bin ${bin.color}" style="border:${borderStyle}">
             <h2>${bin.name}</h2>
             <p><strong>Next collection:</strong> ${formatDate(next)}${labelHTML}</p>
-            <p><strong>Collection cycle:</strong> Every ${
-                bin.cycle === 7 ? "Monday" :
-                bin.cycle === 14 ? "Monday fortnightly" :
-                "3rd Monday"
+            <p><strong>Collection cycle:</strong> ${
+                bin.cycle === 7 ? "Every Monday" :
+                bin.cycle === 14 ? "Every Monday fortnightly" :
+                "Every Monday, every 3 weeks"
             }</p>
         </div>
     `;
